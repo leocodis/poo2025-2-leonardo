@@ -9,9 +9,9 @@ public class DiarioPessoalTest {
     public void testaCadastroPesquisaERemocao() {
         DiarioPessoal diario = new DiarioPessoal();
 
-        assertTrue(diario.cadastraRegistro("Dia feliz", "Hoje foi um bom dia", 10, 6));
-        assertTrue(diario.cadastraRegistro("Estudo Java", "Estudei programação orientada a objetos", 10, 6));
-        assertFalse(diario.cadastraRegistro("Dia feliz", "Título repetido", 11, 6));
+        assertTrue(diario.cadastraRegistro("Dia feliz", "Hoje foi um bom dia", 10, 6, "Pessoal"));
+        assertTrue(diario.cadastraRegistro("Estudo Java", "Estudei programação orientada a objetos", 10, 6, "Estudo"));
+        assertFalse(diario.cadastraRegistro("Dia feliz", "Título repetido", 11, 6, "Pessoal"));
 
         Collection<RegistroDiario> registros = diario.pesquisaRegistrosPorData(10, 6);
         assertEquals(2, registros.size());
@@ -32,7 +32,7 @@ public class DiarioPessoalTest {
         DiarioPessoal diario2 = new DiarioPessoal();
 
         try {
-            diario1.cadastraRegistro("Meu registro", "Guardei este texto no arquivo", 15, 7);
+            diario1.cadastraRegistro("Meu registro", "Guardei este texto no arquivo", 15, 7, "Pessoal");
             diario1.salvarDados();
 
             diario2.recuperarDados();
@@ -43,5 +43,80 @@ public class DiarioPessoalTest {
         } catch (IOException e) {
             fail("Exceção não esperada");
         }
+    }
+
+    @Test
+    public void testaPesquisaPorTitulo() {
+        DiarioPessoal diario = new DiarioPessoal();
+
+        diario.cadastraRegistro("Dia feliz", "Hoje foi ótimo", 10, 6, "Pessoal");
+        diario.cadastraRegistro("Dia triste", "Hoje foi difícil", 11, 6, "Pessoal");
+        diario.cadastraRegistro("Estudo Java", "Aprendi streams", 12, 6, "Estudo");
+
+        Collection<RegistroDiario> encontrados = diario.pesquisaRegistrosPorTitulo("Dia");
+        assertEquals(2, encontrados.size());
+    }
+
+    @Test
+    public void testaPesquisaPorCategoria() {
+        DiarioPessoal diario = new DiarioPessoal();
+
+        diario.cadastraRegistro("Registro 1", "Texto 1", 1, 1, "Estudo");
+        diario.cadastraRegistro("Registro 2", "Texto 2", 2, 2, "Pessoal");
+        diario.cadastraRegistro("Registro 3", "Texto 3", 3, 3, "Estudo");
+
+        Collection<RegistroDiario> encontrados = diario.pesquisaRegistrosPorCategoria("Estudo");
+        assertEquals(2, encontrados.size());
+    }
+
+    @Test
+    public void testaAtualizacaoDeTexto() {
+        DiarioPessoal diario = new DiarioPessoal();
+        diario.cadastraRegistro("Meu dia", "Texto antigo", 1, 1, "Pessoal");
+
+        try {
+            assertTrue(diario.atualizaTextoRegistro("Meu dia", "Texto novo"));
+            Collection<RegistroDiario> registros = diario.pesquisaRegistrosPorTitulo("Meu dia");
+            RegistroDiario r = registros.iterator().next();
+            assertEquals("Texto novo", r.getTexto());
+        } catch (RegistroInexistenteException e) {
+            fail("Exceção não esperada");
+        }
+    }
+
+    @Test
+    public void testaAtualizacaoDeCategoria() {
+        DiarioPessoal diario = new DiarioPessoal();
+        diario.cadastraRegistro("Meu registro", "Algum texto", 5, 5, "Pessoal");
+
+        try {
+            assertTrue(diario.atualizaCategoriaRegistro("Meu registro", "Estudo"));
+            Collection<RegistroDiario> registros = diario.pesquisaRegistrosPorCategoria("Estudo");
+            assertEquals(1, registros.size());
+        } catch (RegistroInexistenteException e) {
+            fail("Exceção não esperada");
+        }
+    }
+
+    @Test
+    public void testaQuantidadeRegistros() {
+        DiarioPessoal diario = new DiarioPessoal();
+
+        diario.cadastraRegistro("Registro 1", "Texto 1", 1, 1, "A");
+        diario.cadastraRegistro("Registro 2", "Texto 2", 2, 2, "B");
+        diario.cadastraRegistro("Registro 3", "Texto 3", 3, 3, "C");
+
+        assertEquals(3, diario.quantidadeRegistros());
+    }
+
+    @Test
+    public void testaListarTodosRegistros() {
+        DiarioPessoal diario = new DiarioPessoal();
+
+        diario.cadastraRegistro("Registro A", "Texto A", 1, 1, "Pessoal");
+        diario.cadastraRegistro("Registro B", "Texto B", 2, 2, "Estudo");
+
+        Collection<RegistroDiario> todos = diario.listarTodosRegistros();
+        assertEquals(2, todos.size());
     }
 }
