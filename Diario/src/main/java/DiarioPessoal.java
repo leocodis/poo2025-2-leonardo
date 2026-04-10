@@ -14,12 +14,13 @@ public class DiarioPessoal implements Diario {
     }
 
     @Override
-    public boolean cadastraRegistro(String titulo, String texto, int dia, int mes) {
+    public boolean cadastraRegistro(String titulo, String texto, int dia, int mes, String categoria) {
         if (this.registros.containsKey(titulo)) {
             return false;
         }
 
-        this.registros.put(titulo, new RegistroDiario(titulo, texto, dia, mes));
+        Categoria cat = new Categoria(categoria);
+        this.registros.put(titulo, new RegistroDiario(titulo, texto, dia, mes, cat));
         return true;
     }
 
@@ -36,6 +37,14 @@ public class DiarioPessoal implements Diario {
         return this.registros.values()
                 .stream()
                 .filter(r -> r.getTitulo().toLowerCase().contains(trechoTitulo.toLowerCase()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<RegistroDiario> pesquisaRegistrosPorCategoria(String nomeCategoria) {
+        return this.registros.values()
+                .stream()
+                .filter(r -> r.getCategoria().getNome().equalsIgnoreCase(nomeCategoria))
                 .collect(Collectors.toList());
     }
 
@@ -58,6 +67,18 @@ public class DiarioPessoal implements Diario {
         }
 
         registro.setTexto(novoTexto);
+        return true;
+    }
+
+    @Override
+    public boolean atualizaCategoriaRegistro(String titulo, String novaCategoria) throws RegistroInexistenteException {
+        RegistroDiario registro = this.registros.get(titulo);
+
+        if (registro == null) {
+            throw new RegistroInexistenteException("Registro não encontrado: " + titulo);
+        }
+
+        registro.setCategoria(new Categoria(novaCategoria));
         return true;
     }
 

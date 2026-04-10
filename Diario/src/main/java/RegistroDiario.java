@@ -5,12 +5,14 @@ public class RegistroDiario implements Serializable {
     private String texto;
     private int dia;
     private int mes;
+    private Categoria categoria;
 
-    public RegistroDiario(String titulo, String texto, int dia, int mes) {
+    public RegistroDiario(String titulo, String texto, int dia, int mes, Categoria categoria) {
         this.titulo = titulo;
         this.texto = texto;
         this.dia = dia;
         this.mes = mes;
+        this.categoria = categoria;
     }
 
     public String getTitulo() {
@@ -29,6 +31,10 @@ public class RegistroDiario implements Serializable {
         return mes;
     }
 
+    public Categoria getCategoria() {
+        return categoria;
+    }
+
     public void setTexto(String texto) {
         this.texto = texto;
     }
@@ -41,9 +47,16 @@ public class RegistroDiario implements Serializable {
         this.mes = mes;
     }
 
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
+    }
+
     @Override
     public String toString() {
-        return "Registro: " + titulo + " - Data: " + dia + "/" + mes + " - Texto: " + texto;
+        return "Registro: " + titulo +
+                " - Data: " + dia + "/" + mes +
+                " - Categoria: " + categoria +
+                " - Texto: " + texto;
     }
 
     @Override
@@ -57,11 +70,16 @@ public class RegistroDiario implements Serializable {
         return this.titulo.equals(outro.titulo)
                 && this.texto.equals(outro.texto)
                 && this.dia == outro.dia
-                && this.mes == outro.mes;
+                && this.mes == outro.mes
+                && this.categoria.equals(outro.categoria);
     }
 
     @Override
     public int hashCode() {
-        return this.titulo.hashCode() + this.texto.hashCode() + this.dia + this.mes;
+        return this.titulo.hashCode()
+                + this.texto.hashCode()
+                + this.dia
+                + this.mes
+                + this.categoria.hashCode();
     }
 }
