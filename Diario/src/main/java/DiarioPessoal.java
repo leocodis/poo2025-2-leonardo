@@ -1,8 +1,8 @@
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class DiarioPessoal implements Diario {
     private Map<String, RegistroDiario> registros;
@@ -25,15 +25,18 @@ public class DiarioPessoal implements Diario {
 
     @Override
     public Collection<RegistroDiario> pesquisaRegistrosPorData(int dia, int mes) {
-        Collection<RegistroDiario> encontrados = new ArrayList<>();
+        return this.registros.values()
+                .stream()
+                .filter(r -> r.getDia() == dia && r.getMes() == mes)
+                .collect(Collectors.toList());
+    }
 
-        for (RegistroDiario r : this.registros.values()) {
-            if (r.getDia() == dia && r.getMes() == mes) {
-                encontrados.add(r);
-            }
-        }
-
-        return encontrados;
+    @Override
+    public Collection<RegistroDiario> pesquisaRegistrosPorTitulo(String trechoTitulo) {
+        return this.registros.values()
+                .stream()
+                .filter(r -> r.getTitulo().toLowerCase().contains(trechoTitulo.toLowerCase()))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -44,6 +47,32 @@ public class DiarioPessoal implements Diario {
 
         this.registros.remove(titulo);
         return true;
+    }
+
+    @Override
+    public boolean atualizaTextoRegistro(String titulo, String novoTexto) throws RegistroInexistenteException {
+        RegistroDiario registro = this.registros.get(titulo);
+
+        if (registro == null) {
+            throw new RegistroInexistenteException("Registro não encontrado: " + titulo);
+        }
+
+        registro.setTexto(novoTexto);
+        return true;
+    }
+
+    @Override
+    public int quantidadeRegistros() {
+        return (int) this.registros.values()
+                .stream()
+                .count();
+    }
+
+    @Override
+    public Collection<RegistroDiario> listarTodosRegistros() {
+        return this.registros.values()
+                .stream()
+                .collect(Collectors.toList());
     }
 
     @Override

@@ -19,8 +19,12 @@ public class MainDiarioGUI {
             String menu = "=== DIÁRIO PESSOAL ===\n"
                     + "1. Cadastrar registro\n"
                     + "2. Pesquisar por data\n"
-                    + "3. Remover registro\n"
-                    + "4. Salvar dados\n"
+                    + "3. Pesquisar por título\n"
+                    + "4. Remover registro\n"
+                    + "5. Atualizar texto de registro\n"
+                    + "6. Mostrar quantidade de registros\n"
+                    + "7. Listar todos os registros\n"
+                    + "8. Salvar dados\n"
                     + "0. Sair";
 
             opcao = Integer.parseInt(JOptionPane.showInputDialog(menu));
@@ -46,13 +50,13 @@ public class MainDiarioGUI {
                     int diaBusca = Integer.parseInt(JOptionPane.showInputDialog("Dia:"));
                     int mesBusca = Integer.parseInt(JOptionPane.showInputDialog("Mês:"));
 
-                    Collection<RegistroDiario> registros = diario.pesquisaRegistrosPorData(diaBusca, mesBusca);
+                    Collection<RegistroDiario> registrosData = diario.pesquisaRegistrosPorData(diaBusca, mesBusca);
 
-                    if (registros.isEmpty()) {
+                    if (registrosData.isEmpty()) {
                         JOptionPane.showMessageDialog(null, "Nenhum registro encontrado.");
                     } else {
                         String resultado = "";
-                        for (RegistroDiario r : registros) {
+                        for (RegistroDiario r : registrosData) {
                             resultado += r.toString() + "\n";
                         }
                         JOptionPane.showMessageDialog(null, resultado);
@@ -60,6 +64,21 @@ public class MainDiarioGUI {
                     break;
 
                 case 3:
+                    String trechoTitulo = JOptionPane.showInputDialog("Digite parte do título:");
+                    Collection<RegistroDiario> registrosTitulo = diario.pesquisaRegistrosPorTitulo(trechoTitulo);
+
+                    if (registrosTitulo.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "Nenhum registro encontrado.");
+                    } else {
+                        String resultado = "";
+                        for (RegistroDiario r : registrosTitulo) {
+                            resultado += r.toString() + "\n";
+                        }
+                        JOptionPane.showMessageDialog(null, resultado);
+                    }
+                    break;
+
+                case 4:
                     String tituloRemover = JOptionPane.showInputDialog("Título do registro:");
 
                     try {
@@ -70,7 +89,37 @@ public class MainDiarioGUI {
                     }
                     break;
 
-                case 4:
+                case 5:
+                    String tituloAtualizar = JOptionPane.showInputDialog("Título do registro:");
+                    String novoTexto = JOptionPane.showInputDialog("Novo texto:");
+
+                    try {
+                        diario.atualizaTextoRegistro(tituloAtualizar, novoTexto);
+                        JOptionPane.showMessageDialog(null, "Texto atualizado com sucesso!");
+                    } catch (RegistroInexistenteException e) {
+                        JOptionPane.showMessageDialog(null, "Registro não encontrado.");
+                    }
+                    break;
+
+                case 6:
+                    JOptionPane.showMessageDialog(null, "Quantidade de registros: " + diario.quantidadeRegistros());
+                    break;
+
+                case 7:
+                    Collection<RegistroDiario> todos = diario.listarTodosRegistros();
+
+                    if (todos.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "Nenhum registro cadastrado.");
+                    } else {
+                        String resultado = "";
+                        for (RegistroDiario r : todos) {
+                            resultado += r.toString() + "\n";
+                        }
+                        JOptionPane.showMessageDialog(null, resultado);
+                    }
+                    break;
+
+                case 8:
                     try {
                         diario.salvarDados();
                         JOptionPane.showMessageDialog(null, "Dados salvos!");
